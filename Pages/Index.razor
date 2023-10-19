@@ -1,33 +1,32 @@
 ﻿@page "/"
+@inherits IndexComponent
 @using System.Net.Http.Json
+@inject IDialogService DialogService
 
 <PageTitle>Index</PageTitle>
 
 <div class="d-flex flex-column align-center align-content-center">
-    <MudTextField  @bind-Value="Search" 
+    @* <MudTextField  @bind-Value="Search" 
                     Style="width: 30vw"
                     Label="Search" 
                     Variant="Variant.Outlined" 
                     Adornment="Adornment.End" 
                     AdornmentIcon="@Icons.Material.Filled.Search" 
                     AdornmentColor="Color.Secondary" 
-    />
+    /> *@
 
     <MudDataGrid T="Element" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
-        Hideable="true" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
+        Hideable="false" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Periodic Elements</MudText>
+            <MudText Typo="Typo.h6">Tasks</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
             <SelectColumn T="Element" />
-            <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" Filterable="false" />
-            <PropertyColumn Property="x => x.Sign" />
+            <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="true" Filterable="true" />
             <PropertyColumn Property="x => x.Name" SortBy="@_sortBy" />
-            <PropertyColumn Property="x => x.Position" />
-            <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
             <PropertyColumn Property="x => x.Group" Title="Category" />
         </Columns>
         <PagerContent>
@@ -54,63 +53,14 @@
             }
         </MudExpansionPanel>
     </MudExpansionPanels>
+
+    <br>
+
+    <MudTextField @bind-Value="@FieldValue" Immediate="true" Label="Task Name" Variant="Variant.Outlined" Disabled="@DisableField"></MudTextField>
+
+    <br>
+
+    <MudButton Variant="Variant.Filled" Color="@ButtonColor" @onclick="ChangeButtonType" >@ButtonText</MudButton>
+
+    @FieldValue
 </div>
-
-
-
-@code {
-    private IEnumerable<Element> Elements = new List<Element>();
-    private string _searchString;
-    private bool _sortNameByLength;
-    private List<string> _events = new();
-
-    record Element(string Name, string Sign, int Number, int Position, int Molar, int Group);
-
-    // custom sort by name length
-    private Func<Element, object> _sortBy => x =>
-    {
-        if (_sortNameByLength)
-            return x.Name.Length;
-        else
-            return x.Name;
-    };
-
-    // quick filter - filter globally across multiple columns with the same input
-    private Func<Element, bool> _quickFilter => x =>
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
-
-        if (x.Sign.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString))
-            return true;
-
-        return false;
-    };
-
-    protected override async Task OnInitializedAsync()
-    {
-        @* Elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable"); *@
-    }
-
-    // events
-    void RowClicked(DataGridRowClickEventArgs<Element> args)
-    {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void SelectedItemsChanged(HashSet<Element> items)
-    {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
-    }
-}
-
-@code
-{
-    private string? Search { get; set; }
-}
