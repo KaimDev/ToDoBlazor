@@ -13,7 +13,7 @@ public class IndexComponent : ComponentBase
 
     public string ButtonText = ButtonTextState.NewTask;
 
-    public IEnumerable<Element> Elements;
+    public List<Element> Elements;
 
     public string _searchString = String.Empty;
 
@@ -109,12 +109,18 @@ public class IndexComponent : ComponentBase
         }
         else if (ButtonColor == Color.Secondary)
         {
+            FieldValue = String.Empty;
+
             ButtonColor = Color.Primary;
             ButtonText = ButtonTextState.NewTask;
             DisableField = true;
         }
         else if(ButtonColor == Color.Success)
         {
+            var lenght = Elements.Count();
+            Elements.Add(new Element(FieldValue, lenght + 1, lenght - 2));
+            FieldValue = String.Empty;
+
             ButtonColor = Color.Primary;
             ButtonText = ButtonTextState.NewTask;
             DisableField = true;

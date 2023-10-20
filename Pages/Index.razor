@@ -6,14 +6,16 @@
 <PageTitle>Index</PageTitle>
 
 <div class="d-flex flex-column align-center align-content-center">
-    @* <MudTextField  @bind-Value="Search" 
-                    Style="width: 30vw"
-                    Label="Search" 
-                    Variant="Variant.Outlined" 
-                    Adornment="Adornment.End" 
-                    AdornmentIcon="@Icons.Material.Filled.Search" 
-                    AdornmentColor="Color.Secondary" 
-    /> *@
+    
+    <br>
+
+    <MudTextField @bind-Value="@FieldValue" Immediate="true" Label="Task Name" Variant="Variant.Outlined" Disabled="@DisableField"></MudTextField>
+
+    <br>
+
+    <MudButton Variant="Variant.Filled" Color="@ButtonColor" @onclick="ChangeButtonType" >@ButtonText</MudButton>
+    
+    <br>
 
     <MudDataGrid T="Element" MultiSelection="true" Items="@Elements" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
         Hideable="false" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
@@ -55,12 +57,4 @@
     </MudExpansionPanels>
 
     <br>
-
-    <MudTextField @bind-Value="@FieldValue" Immediate="true" Label="Task Name" Variant="Variant.Outlined" Disabled="@DisableField"></MudTextField>
-
-    <br>
-
-    <MudButton Variant="Variant.Filled" Color="@ButtonColor" @onclick="ChangeButtonType" >@ButtonText</MudButton>
-
-    @FieldValue
 </div>
